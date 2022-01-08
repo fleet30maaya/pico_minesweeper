@@ -2,19 +2,27 @@
 
 A simple pico-8 game example.
 
+![](screenshot.png)
+
 ...with the following features:
 
 - Mouse support
 - Custom Palette
+- Custom menu items
+  - Change difficulty from menu
 
 TODO:
 
 - Keyboard/gamepad support
-- Custom menu items
 - Save/Load
 - Sound & music
 
 ## Code comments
+
+### Difficulties
+
+- Difficulty 0 - Easy: 10 mines
+- Difficulty 1 - Hard: 18 mines
 
 ### board data (board_t)
 

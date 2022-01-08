@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 33
+version 34
 __lua__
 --pico minesweeper
 --by aya
@@ -10,7 +10,7 @@ function _init()
  last_l_s=0
  last_r_s=0
  m_btn_s=0
- clear_game()
+ clear_game(0)
 end
 
 function _update60()
@@ -105,7 +105,8 @@ end
 -->8
 --logic
 
-function clear_game()
+function clear_game(diff)
+ menuitem(1, "restart "..((diff==0 and "hard")or "easy"), function() clear_game(1-diff) end)
  board_t={}
  status_t={}
  for y=1,9 do
@@ -116,12 +117,12 @@ function clear_game()
    status_t[y][x]=0
   end
  end
+ g_diff=diff
  g_time=0
- g_mine_count=10
+ g_mine_count=(diff==0 and 10)or 18
  g_status=0
  flag_count=0
  g_time=0
-
  last_l_time=0
  last_r_time=0
  duel_down=false
@@ -133,7 +134,7 @@ function start_game(bx,by)
   x,y=flr(rnd(9))+1,flr(rnd(9))+1
   if board_t[y][x]==0 and (x~=bx or y~=by) then
    board_t[y][x]=-1
-   c=c-1
+   c-=1
   end
  end
  for y=1,9 do
@@ -142,7 +143,7 @@ function start_game(bx,by)
    if board_t[y][x]==0 then
     for yy=max(1,y-1),min(9,y+1) do
      for xx=max(1,x-1),min(9,x+1) do
-      if(board_t[yy][xx]<0)c=c-1
+      if(board_t[yy][xx]<0)c-=1
      end
     end
     board_t[y][x]=-c
@@ -281,7 +282,7 @@ function on_input_hold(b)
 end
 
 function on_m_btn()
- clear_game()
+ clear_game(g_diff)
 end
 
 function on_block_l(bx,by)
@@ -431,6 +432,7 @@ function d_main_button()
  d_sblock(56,5,70,19,m_btn_s)
  palt(0,false)
  palt(11,true)
+ if(g_diff==1)pal(10,9,0)
  if g_status<2 then
    sspr(81,0,11,11,58,7)
  elseif g_status==2 then
@@ -438,6 +440,7 @@ function d_main_button()
  elseif g_status==3 then
    sspr(92,0,11,11,58,7)
  end
+ if(g_diff==1)pal(10,10,0)
  palt(0,true)
  palt(11,false)
 end
