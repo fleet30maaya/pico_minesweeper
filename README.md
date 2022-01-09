@@ -7,13 +7,13 @@ A simple pico-8 game example.
 ...with the following features:
 
 - Mouse support
+- Keyboard/gamepad support
 - Custom Palette
 - Custom menu items
   - Change difficulty from menu
 
 TODO:
 
-- Keyboard/gamepad support
 - Save/Load
 - Sound & music
 

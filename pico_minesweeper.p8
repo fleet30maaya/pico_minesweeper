@@ -7,9 +7,9 @@ function _init()
  poke(0x5f2d,1)
  pal(2,130,1) -- a darker purple
  bx,by=0,0
+ mx,my,omx,omy=0,0,0,0
  last_l_s=0
  last_r_s=0
- m_btn_s=0
  clear_game(0)
 end
 
@@ -21,12 +21,21 @@ function _update60()
   end
  end
 
- --mouse move
- mx,my=stat(32),stat(33)
+ --mouse/key move
+ if stat(32)~=omx or stat(33)~=omy then
+  --the cursor moved by the keys
+  --will not disturbed by the mouse
+  omx,omy=mx,my
+  mx,my=stat(32),stat(33)
+ end
+ if(btnp(0,0))key_moveto(bx-1,by)
+ if(btnp(1,0))key_moveto(bx+1,by)
+ if(btnp(2,0))key_moveto(bx,by-1)
+ if(btnp(3,0))key_moveto(bx,by+1)
  bx,by=flr((mx-14)/11)+1,flr((my-23)/11)+1
- bl,br=stat(34)&0x1,stat(34)&0x2
 
- --mouse buttons
+ --buttons
+ bl,br=(stat(34)&0x1)+(btn(4,0)and 1 or 0),(stat(34)&0x2)+(btn(5,0)and 1 or 0)
  th=0.2
  if bl>0 and last_l_s==0 then
   last_l_s=1
@@ -74,6 +83,12 @@ function _update60()
   g_time=min(999,g_time)
   last_time=time()
  end
+
+ if g_status==2 or g_status==3 then
+  if((not btn(4,0) and not btn(5,0))and key_restart==2) clear_game(g_diff)
+  if((btn(4,0)or btn(5,0))and key_restart==1) key_restart=2
+  if((not btn(4,0) and not btn(5,0))and key_restart==0) key_restart=1
+ end
 end
 
 function _draw()
@@ -95,7 +110,7 @@ function _draw()
  d_7seg_num(flr(g_time),16,7)
  d_7seg_num(g_mine_count-flag_count,89,7)
 
- d_hand(stat(32),stat(33))
+ d_hand(mx,my)
 
  --fps
 --  rectfill(0,121,10,127,1)
@@ -123,9 +138,17 @@ function clear_game(diff)
  g_status=0
  flag_count=0
  g_time=0
+ last_l_s=0
+ last_r_s=0
  last_l_time=0
  last_r_time=0
  duel_down=false
+ m_btn_s=0
+ key_restart=0
+ --if mouse diabled
+ if mx==my and omx==omy and mx==omy and mx==0 then
+  key_moveto(1,1)
+ end
 end
 
 function start_game(bx,by)
@@ -153,6 +176,7 @@ function start_game(bx,by)
  --start
  g_status=1
  last_time=time()
+ key_restart=0
 end
 
 function open_block(bx,by)
@@ -233,6 +257,11 @@ end
 
 -->8
 --input
+function key_moveto(nbx,nby)
+  bx,by=max(1,min(nbx,9)),max(1,min(nby,9))
+  mx,my=3+bx*11+6,12+by*11+6
+end
+
 function on_input_up(b)
  if bx<10 and bx>0 and by<10 and by>0 then
   if b==0 then
@@ -590,3 +619,4 @@ __label__
 66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666
 66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666
 66666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666
+
